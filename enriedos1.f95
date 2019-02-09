@@ -22,7 +22,7 @@ integer*4:: hor,ver,horres,verres, io, jo, h, l
 
 integer semilla(12), i, j, k, n, m, p1, p2, u, v, discret
 integer ancho, alto, puntos, enlaces, orden(1000), extremos(1000,2), salen(1000,7)
-real aleat(1000), dir(1000,2), centros(1000,2), fza_cent(1000,1000,2), fza_punto(1000,2)
+real aleat(1000), dir(1000,2), fza_cent(1000,1000,2), fza_punto(1000,2)
 real m_c_o, m_p_o, masa_cent, masa_punto, long_o, long, umbral
 real theta, vec(2), p(2), q(2), fza(2)
 logical horiz(100,100), vert(100,100), diag(100,100), lineas(1000,1000), lista(1000)
@@ -33,7 +33,7 @@ hor=1000; ver=1000; horres=1; verres=1
 
 ancho=12; alto=8; puntos=ancho*alto
 umbral=0.5
-discret=9
+discret=8
 m_c_o=0.1; m_p_o=10.0; long_o=10.0
 masa_cent=m_c_o; masa_punto=1.0
 
@@ -71,19 +71,19 @@ n=10
 ! para los n puntos ubicados en una grilla de alto x ancho
 ! establece relaciones entre todos los vecinos verticales,
 ! horizontales y diagonales de un solo sentido.
-forall(i=1:alto-1,j=1:ancho-1)lineas(((i-1)*ancho+j),((i-1)*ancho+j+1))=.true.
-forall(i=1:alto-1,j=1:ancho-1)lineas((i*ancho+j),((i-1)*ancho+j))=.true.
-forall(i=1:alto-1,j=1:ancho-1)lineas((i*ancho+j),((i-1)*ancho+j+1))=.true.
-forall(i=1:alto-1)lineas(((i+1)*ancho),(i*ancho))=.true.
-forall(j=1:ancho-1)lineas(((alto-1)*ancho+j),((alto-1)*ancho+j+1))=.true.
+forall(i=1:alto-1,j=1:ancho-1) lineas(((i-1)*ancho+j),((i-1)*ancho+j+1))=.true.
+forall(i=1:alto-1,j=1:ancho-1) lineas((i*ancho+j),((i-1)*ancho+j))=.true.
+forall(i=1:alto-1,j=1:ancho-1) lineas((i*ancho+j),((i-1)*ancho+j+1))=.true.
+forall(i=1:alto-1) lineas(((i+1)*ancho),(i*ancho))=.true.
+forall(j=1:ancho-1) lineas(((alto-1)*ancho+j),((alto-1)*ancho+j+1))=.true.
 lineas=lineas .or. transpose(lineas)
 
 
-! Y ahora decide cu·les de esas relaciones eliminar
+! Y ahora decide cu√°les de esas relaciones eliminar
 do i=1,alto-1
   do j=1,ancho-1
     p1=(i-1)*ancho+j+1
-    ! vÌnculos horizontales
+    ! v√≠nculos horizontales
     if (aleat(n)>umbral) then
       if (count(lineas(p1,:))>2) then
         p2=(i-1)*ancho+j
@@ -94,7 +94,7 @@ do i=1,alto-1
       end if
     end if
     n=n+1
-    ! vÌnculos verticales
+    ! v√≠nculos verticales
     if (aleat(n)>umbral) then
       if (count(lineas(p1,:))>2) then
         p2=i*ancho+j
@@ -105,7 +105,7 @@ do i=1,alto-1
       end if
     end if
     n=n+1
-    ! vÌnculos diagonales
+    ! v√≠nculos diagonales
     if (aleat(n)>umbral) then
       if (count(lineas(p1,:))>2) then
         p2=i*ancho+j
@@ -117,7 +117,7 @@ do i=1,alto-1
     end if
     n=n+1
   end do
-  ! vÌnculos verticales del fondo
+  ! v√≠nculos verticales del fondo
   if (aleat(n)>umbral) then
     j=ancho
     p2=i*ancho+j
@@ -130,7 +130,7 @@ do i=1,alto-1
 end do
 i=alto
 do j=1,ancho-1
-  ! vÌnculos horizontales del fondo
+  ! v√≠nculos horizontales del fondo
   if (aleat(n)>umbral) then
     p1=(i-1)*ancho+j+1
     p2=(i-1)*ancho+j
@@ -143,26 +143,24 @@ do j=1,ancho-1
 end do
 
 if (all(lineas .eqv. transpose(lineas)))then
-  write(*,*)"Los puntos est·n bien unidos"
+  write(*,*)"Los puntos est√°n bien unidos"
 else
-  write(*,*)"Algo no anda con los puntos, asÌ q se corrige como pinta"
+  write(*,*)"Algo no anda con los puntos, as√≠ q se corrige como pinta"
   lineas=lineas .or. transpose(lineas)
 end if
 
-! Anota los extremos de las lÌneas y sus centros
+! Anota los extremos de las l√≠neas y sus centros
 salen=0
 extremos=0
-centros=0
 enlaces=0
 do i=1,puntos
   do j=i+1,puntos
     if(lineas(i,j).eqv. .true.)then
       enlaces=enlaces+1
-      extremos(enlaces,:)=(/i,j/) ! Indica los puntos extremos de cada lÌnea
-      centros(enlaces,:)=0.5*(/dir(i,1)+dir(j,1),dir(i,2)+dir(j,2)/)
+      extremos(enlaces,:)=(/i,j/) ! Indica los puntos extremos de cada l√≠nea
       salen(i,salen(i,1)+2)=enlaces; salen(i,1)=salen(i,1)+1
       salen(j,salen(j,1)+2)=enlaces; salen(j,1)=salen(j,1)+1
-      ! En la matriz "salen" se listan las lÌneas q le corresponden a cada
+      ! En la matriz "salen" se listan las l√≠neas q le corresponden a cada
       ! punto. El primer numero es la cantidad de enlaces del punto.
     end if
   end do
@@ -175,11 +173,6 @@ do n=1,puntos
   i=990-30*((n-1)/ancho)
   j=10+30*mod(n-1,ancho)
   dir(n,:)=(/i,j/)
-  do k=2,salen(n,1)+1
-    m=extremos(salen(n,k),1)
-    if(m==n)m=extremos(salen(n,k),2)
-    centros(salen(n,k),:)=0.5*(/dir(n,1)+dir(m,1),dir(n,2)+dir(m,2)/)
-  end do
 end do
 ! Cuenta los cruces al comienzo
 n=0
@@ -201,11 +194,6 @@ do i=1,puntos
   io=int(300*cos(theta))+500; jo=int(300*sin(theta))+500
   n=orden(i)
   dir(n,:)=(/io,jo/)
-  do k=2,salen(n,1)+1
-    m=extremos(salen(n,k),1)
-    if(m==n)m=extremos(salen(n,k),2)
-    centros(salen(n,k),:)=0.5*(/io+dir(m,1),jo+dir(m,2)/)
-  end do
 end do
 
 call dibujapuntos(puntos,dir,lineas,out)
@@ -226,10 +214,10 @@ write(*,*)"Cantidad de cruces ",n
 
 ! Ahora viene toda la etapa de movimiento. Cada punto se mueve empujado
 ! por la suma de las repulsiones q los centros de los enlaces se ejercen
-! entre sÌ y la tensiÛn de tracciÛn en los enlaces q los tiran hacia
-! los puntos a los q est·n unidos.
+! entre s√≠ y la tensi√≥n de tracci√≥n en los enlaces q los tiran hacia
+! los puntos a los q est√°n unidos.
 
-! Calcula las fuerzas de rechazo entre los centros de las lÌneas
+! Calcula las fuerzas de rechazo entre los centros de las l√≠neas
 fza_cent=0
 l=0
 do while (l<300.and.k>0)
@@ -255,7 +243,7 @@ do while (l<300.and.k>0)
     end do
   end do
 
-  ! Mueve los puntos seg˙n la din·mica de fuerzas
+  ! Mueve los puntos seg√∫n la din√°mica de fuerzas
   do n=1,puntos
     vec=fza_punto(n,:)
     do j=2,salen(n,1)+1
@@ -272,9 +260,7 @@ do while (l<300.and.k>0)
     dir(n,:)=dir(n,:)+vec
   end do
 
-  ! Recalcula los centros de los enlaces
-  forall(i=1:enlaces)centros(i,:)=(dir(extremos(i,1),:)+dir(extremos(i,2),:))*0.5
-  ! Cuenta los cruces
+! Cuenta los cruces
   n=k
   k=0
   do i=1,enlaces
@@ -309,16 +295,16 @@ end do
 end program enriedos
 !::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 subroutine dibujapuntos(puntos,dir,lineas,out)
-! Dibuja las lÌneas y los puntos
+! Dibuja las l√≠neas y los puntos
   implicit none
   real dir(1000,2)
   logical lineas(1000,1000)
   integer*2,dimension(1:2048,1:2048,1:3) :: out
   integer puntos
-  integer i, j, k, l, n, cx, cy
-  real factor, dir1(1000,2)
+  integer i, j, k, l, n
+  real factor, dir1(1000,2), length
 
-  ! Verifica q nada se halla ido de pantalla y si sÌ achica todo
+  ! Verifica q nada se halla ido de pantalla y si s√≠ achica todo
   factor=1.
   if (any(abs(dir(1:puntos,:)-500)>490)) factor=490/maxval(abs(dir(1:puntos,:)-500))
   dir1=((dir-500)*factor)+500
@@ -341,10 +327,8 @@ subroutine dibujapuntos(puntos,dir,lineas,out)
     do j=i,puntos
       if(lineas(i,j).eqv. .true.)then
         k=dir1(j,1)-dir1(i,1); l=dir1(j,2)-dir1(i,2)
-        cx=int((dir1(j,1)+dir1(i,1))*0.5); cy=int((dir1(j,2)+dir1(i,2))*0.5)
-        forall(n=1:300)out(int(dir1(i,1)+k*n/300.0),int(dir1(i,2)+l*n/300.0),:)=255
-        out(cx-1:cx+1,cy-1:cy+1,1:2)=255
-        out(cx-1:cx+1,cy-1:cy+1,  3)=0
+        length=sqrt(sum((dir1(j,:)-dir1(i,:))**2))
+        forall(n=1:int(length))out(int(dir1(i,1)+k*n/length),int(dir1(i,2)+l*n/length),:)=255
       end if
     end do
   end do
